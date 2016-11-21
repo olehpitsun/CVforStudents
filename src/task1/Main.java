@@ -1,9 +1,9 @@
 package task1;
 
 import org.opencv.core.Core;
-import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
-import task1.entity.Img;
+
+import entity.Img;
 import task1.interfaces.Filter;
 import java.util.ArrayList;
 import java.util.Arrays;

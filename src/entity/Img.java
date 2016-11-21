@@ -1,4 +1,4 @@
-package task1.entity;
+package entity;
 
 import org.opencv.core.Mat;
 

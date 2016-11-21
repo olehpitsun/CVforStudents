@@ -1,7 +1,7 @@
 package task1.Filters;
 
 import org.opencv.highgui.Highgui;
-import task1.entity.Img;
+import entity.Img;
 import task1.interfaces.Filter;
 import tools.Filters;
 
