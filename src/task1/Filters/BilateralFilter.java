@@ -17,7 +17,7 @@ public class BilateralFilter implements Filter {
 
         for(int wS : windowSize){
             Highgui.imwrite("C:\\Projects\\CVforStudents\\img\\res\\Bilateral\\" + wS + ".jpg",
-                    Filters.bilateralFilter(Img.getImg(), wS,3.0,3.0));
+                    Filters.bilateralFilter(Img.getImg(), wS,70,98));
         }
     }
 }

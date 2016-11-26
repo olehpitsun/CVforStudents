@@ -1,9 +1,6 @@
 package task3;
 
-import task3.SegmentationMethods.Canny;
-import task3.SegmentationMethods.Kmeans;
-import task3.SegmentationMethods.Laplacian;
-import task3.SegmentationMethods.Thresholding;
+import task3.SegmentationMethods.*;
 import task3.interfaces.Segmentation;
 
 /**
@@ -22,6 +19,10 @@ public class SegmentationFactory {
                 return new Kmeans();
             case "threshold":
                 return new Thresholding();
+            case "watershed":
+                return new Watershed();
+            case "grabcut":
+                return new grabCut();
             default:
                 break;
         }

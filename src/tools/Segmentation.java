@@ -1,7 +1,9 @@
 package tools;
 
 
+import entity.Img;
 import org.opencv.core.*;
+import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -12,21 +14,27 @@ import java.util.List;
  */
 public class Segmentation {
 
+    /**
+     * Детектор Кенні
+     * @param image - Вхідне зображення
+     * @param size - нижній поріг
+     * @return Mat результат
+     */
     public static Mat cannyDetection(Mat image, int size){
 
         Mat grayImage = new Mat();
         Mat detectedEdges = new Mat();
 
-        // convert to grayscale
+        // cконвертація у градації сірого
         Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
 
-        // reduce noise with a 3x3 kernel
+        // видалення шумів
         Imgproc.blur(grayImage, detectedEdges, new Size(3, 3));
 
-        // canny detector, with ratio of lower:upper threshold of 3:1
         Imgproc.Canny(detectedEdges, detectedEdges, size, size/3, 3, false);
         return detectedEdges;
     }
+
 
     public static Mat Laplacian(Mat source, int size, int delta){
 
@@ -44,6 +52,12 @@ public class Segmentation {
         return source;
     }
 
+    /**
+     *
+     * @param source - Вхідне зображення
+     * @param delta - дельта
+     * @return
+     */
     public static Mat Sobel(Mat source, int delta ){
 
         Mat grey = new Mat();
@@ -62,6 +76,40 @@ public class Segmentation {
     }
 
 
+    /**
+     *
+     * @param img - Вхідне зображення
+     * @return Mat - результат
+     */
+    public static Mat watershed(Mat img)
+    {
+        Mat threeChannel = new Mat();
+
+        Imgproc.cvtColor(img, threeChannel, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.threshold(threeChannel, threeChannel, 100, 255, Imgproc.THRESH_BINARY);
+
+        Mat fg = new Mat(img.size(),CvType.CV_8U);
+        Imgproc.erode(threeChannel,fg,new Mat());
+
+        Mat bg = new Mat(img.size(),CvType.CV_8U);
+        Imgproc.dilate(threeChannel,bg,new Mat());
+        Imgproc.threshold(bg,bg,1, 128, Imgproc.THRESH_BINARY_INV);
+
+        Mat markers = new Mat(img.size(), CvType.CV_8U, new Scalar(0));
+        Core.add(fg, bg, markers);
+        Mat result = new Mat();
+
+        WatershedSegmenter segmenter = new WatershedSegmenter();
+        segmenter.setMarkers(markers);
+        result = segmenter.process(img);
+        return result;
+    }
+
+    /**
+     *
+     * @param src - вхідне зображення
+     * @return Mat результат
+     */
     public static Mat kmeans(Mat src){
 
         Mat mHSV = new Mat();
@@ -83,91 +131,60 @@ public class Segmentation {
         return mHSV;
     }
 
-    public static Mat thresholding(Mat thresholdImg1, int minValue, int maxValue){
+    /**
+     * порогова сегментація
+     * @param src1 - вхідне зображення
+     * @param minValue - нижній поріг
+     * @param maxValue - верхній поріг
+     * @param threhType - тип сегментації
+     * @return
+     */
+    public static Mat thresholding(Mat src1, int minValue, int maxValue, String threhType){
 
-        Mat rgba =thresholdImg1; Mat tempMat = thresholdImg1;
-        rgba = new Mat(thresholdImg1.cols(), thresholdImg1.rows(), CvType.CV_8UC3);
-        thresholdImg1.copyTo(rgba);
+        Mat frame = new Mat();
 
-        List<Mat> hsv_planes_temp = new ArrayList<Mat>(3);
-        Core.split(tempMat, hsv_planes_temp);
+        switch (threhType){
+            case "THRESH_OTSU":
+                Imgproc.threshold(src1, frame, minValue, maxValue, Imgproc.THRESH_OTSU);
+                break;
+            case "THRESH_BINARY":
+                Imgproc.threshold(src1, frame, minValue, maxValue, Imgproc.THRESH_BINARY);
+                break;
+            case "THRESH_BINARY_INV":
+                Imgproc.threshold(src1, frame, minValue, maxValue, Imgproc.THRESH_BINARY_INV);
+                break;
+            case "THRESH_TOZERO":
+                Imgproc.threshold(src1, frame, minValue, maxValue, Imgproc.THRESH_TOZERO);
+                break;
+            case "THRESH_TRUNC":
+                Imgproc.threshold(src1, frame, minValue, maxValue, Imgproc.THRESH_TRUNC);
+                break;
+            case "ADAPTIVE_THRESH_GAUSSIAN_C":
+                Imgproc.threshold(src1, frame, minValue, maxValue, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C);
+                break;
+            case "ADAPTIVE_THRESH_MEAN_C":
+                Imgproc.threshold(src1, frame, minValue, maxValue, Imgproc.ADAPTIVE_THRESH_MEAN_C);
+                break;
+            case "THRESH_BINARY+THRESH_OTSU":
+                Imgproc.threshold(src1, frame, minValue, maxValue, Imgproc.THRESH_BINARY_INV + Imgproc.THRESH_OTSU);
+                break;
+        }
 
-
-
-        Mat mHSV = new Mat();
-        Imgproc.cvtColor(rgba, mHSV, Imgproc.COLOR_RGBA2RGB,3);
-        Imgproc.cvtColor(rgba, mHSV, Imgproc.COLOR_RGB2HSV,3);
-        List<Mat> hsv_planes = new ArrayList<Mat>(3);
-        Core.split(mHSV, hsv_planes);
-
-
-
-
-        Mat channel = hsv_planes.get(0);
-        channel = Mat.zeros(mHSV.rows(),mHSV.cols(),CvType.CV_8UC1);
-        hsv_planes.set(2,channel);
-        Core.merge(hsv_planes,mHSV);
-
-        //mHSV.convertTo(mHSV, CvType.CV_8UC1);
-        //mHSV = Histogram(mHSV);
-
-
-
-
-
-        Mat clusteredHSV = new Mat();
-        mHSV.convertTo(mHSV, CvType.CV_32FC3);
-        TermCriteria criteria = new TermCriteria(TermCriteria.EPS + TermCriteria.MAX_ITER,100,0.1);
-        Core.kmeans(mHSV, 1, clusteredHSV, criteria, 20, Core.KMEANS_PP_CENTERS);
-        Mat hsvImg = new Mat();
-        List<Mat> hsvPlanes = new ArrayList<>();
-        Mat thresholdImg = new Mat();
-        int thresh_type = Imgproc.THRESH_BINARY_INV;
-        hsvImg.create(mHSV.size(), CvType.CV_8U);
-        Imgproc.cvtColor(mHSV, hsvImg, Imgproc.COLOR_BGR2HSV);
-        Core.split(hsvImg, hsvPlanes);
-        Imgproc.threshold(hsvPlanes.get(1), thresholdImg, 0 , 200 , thresh_type);
-
-
-
-        Imgproc.threshold(mHSV,mHSV, 100, 250, Imgproc.THRESH_BINARY );
-
-
-
-
-
-        Mat foreground = new Mat(mHSV.size(), CvType.CV_8UC3, new Scalar(255, 255, 255));
-        Core.bitwise_not(mHSV,foreground);
-
-        mHSV.convertTo(mHSV, CvType.CV_8UC1);
-
-        mHSV.copyTo(foreground, mHSV);
-        //mHSV.convertTo(mHSV, CvType.CV_8UC1);
-        return foreground;
+        return frame;
     }
 
+    public static Mat grabCut(Mat src){
 
-
-    public static Mat Histogram(Mat im){
-
-        Mat img = im;
-
-        Mat equ = new Mat();
-        img.copyTo(equ);
-        //Imgproc.blur(equ, equ, new Size(3, 3));
-
-        Imgproc.cvtColor(equ, equ, Imgproc.COLOR_BGR2YCrCb);
-        List<Mat> channels = new ArrayList<Mat>();
-        Core.split(equ, channels);
-        Imgproc.equalizeHist(channels.get(0), channels.get(0));
-        Core.merge(channels, equ);
-        Imgproc.cvtColor(equ, equ, Imgproc.COLOR_YCrCb2BGR);
-
-        Mat gray = new Mat();
-        Imgproc.cvtColor(equ, gray, Imgproc.COLOR_BGR2GRAY);
-        Mat grayOrig = new Mat();
-        Imgproc.cvtColor(img, grayOrig, Imgproc.COLOR_BGR2GRAY);
-        System.out.println("Histogram work ///");
-        return grayOrig;
+        // by https://github.com/tanaka0079/java/blob/master/opencv/image/Grabcut.java
+        Mat mask = new Mat();
+        Mat bgModel = new Mat();
+        Mat fgModel = new Mat();
+        Rect rect = new Rect(10, 10,250,290);
+        Mat source = new Mat(1, 1, CvType.CV_8U, new Scalar(3));
+        Imgproc.grabCut(src, mask, rect, bgModel, fgModel, 1, 0);
+        Core.compare(mask, source, mask, Core.CMP_EQ);
+        Mat fg = new Mat(src.size(), CvType.CV_8UC1, new Scalar(0, 0, 0));
+        src.copyTo(fg, mask);
+        return fg;
     }
 }

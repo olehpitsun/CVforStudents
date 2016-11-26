@@ -21,6 +21,12 @@ public class PreProcImgOperations {
         return dst;
     }
 
+    /**
+     *
+     * @param image - вхідне зображення в форматі Mat
+     * @param sz
+     * @return
+     */
     public static Mat bright(Mat image, int sz){
 
         Mat dst = new Mat(image.rows(), image.cols(), image.type());
@@ -42,6 +48,12 @@ public class PreProcImgOperations {
         return dst;
     }
 
+    /**
+     *
+     * @param image - вхідне зображення
+     * @param kernel - ядро
+     * @return
+     */
     public static Mat Dilate(Mat image, int kernel){
 
         final Mat dst = new Mat(image.cols(), image.rows(), CvType.CV_8UC3);

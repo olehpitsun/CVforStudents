@@ -15,7 +15,7 @@ public class adaptiveBilateralFilter implements Filter {
     public void getFilter(List<Integer> windowSize) {
         for(int wS : windowSize){
             Highgui.imwrite("C:\\Projects\\CVforStudents\\img\\res\\AdaptiveBilateral\\" + wS +".jpg",
-                    Filters.adaptiveBilateralFilter(Img.getImg(), wS,3));
+                    Filters.adaptiveBilateralFilter(Img.getImg(), wS,36));
         }
     }
 }
