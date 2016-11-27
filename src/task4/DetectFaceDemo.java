@@ -19,10 +19,20 @@ public class DetectFaceDemo {
 
         System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
 
+
+
+        Core.putText(image, "Detected " + faceDetections.toArray().length + " persons" , new Point(image.rows(),300),
+                Core.FONT_HERSHEY_TRIPLEX, .7 ,new  Scalar(0,0,255));
+
         // Draw a bounding box around each face.
+        int i = 0;
         for (Rect rect : faceDetections.toArray()) {
+
+            Core.putText(image, "Find" , new Point(rect.x-20,rect.y),
+                        Core.FONT_HERSHEY_TRIPLEX, .3 ,new  Scalar(255,255,255));
+
             Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
-                    new Scalar(0, 0, 255));
+                    new Scalar(250, 0, 0), 2);
         }
 
         String filename = "C:\\Projects\\CVforStudents\\img\\output1.png";
