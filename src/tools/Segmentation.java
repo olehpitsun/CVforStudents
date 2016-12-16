@@ -5,9 +5,12 @@ import entity.Img;
 import org.opencv.core.*;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
+import tools.HistogramEq.HE;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static tools.HistogramEq.HE.Histogram;
 
 /**
  * Created by oleh on 02.01.16.
@@ -86,14 +89,18 @@ public class Segmentation {
         Mat threeChannel = new Mat();
 
         Imgproc.cvtColor(img, threeChannel, Imgproc.COLOR_BGR2GRAY);
-        Imgproc.threshold(threeChannel, threeChannel, 100, 255, Imgproc.THRESH_BINARY);
+
+
+        Imgproc.threshold(threeChannel, threeChannel, 85, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C);
+
 
         Mat fg = new Mat(img.size(),CvType.CV_8U);
         Imgproc.erode(threeChannel,fg,new Mat());
 
         Mat bg = new Mat(img.size(),CvType.CV_8U);
         Imgproc.dilate(threeChannel,bg,new Mat());
-        Imgproc.threshold(bg,bg,1, 128, Imgproc.THRESH_BINARY_INV);
+        Imgproc.threshold(bg,bg,1, 128, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C);
+
 
         Mat markers = new Mat(img.size(), CvType.CV_8U, new Scalar(0));
         Core.add(fg, bg, markers);
@@ -102,7 +109,28 @@ public class Segmentation {
         WatershedSegmenter segmenter = new WatershedSegmenter();
         segmenter.setMarkers(markers);
         result = segmenter.process(img);
+
         return result;
+    }
+
+    public Mat histogrmEqualization(Mat rgba){
+        Mat mHSV = new Mat();
+        Imgproc.cvtColor(rgba, mHSV, Imgproc.COLOR_RGBA2RGB,3);
+        Imgproc.cvtColor(rgba, mHSV, Imgproc.COLOR_RGB2HSV,3);
+        List<Mat> hsv_planes = new ArrayList<Mat>(3);
+        Core.split(mHSV, hsv_planes);
+
+
+
+
+        Mat channel = hsv_planes.get(0);
+        channel = Mat.zeros(mHSV.rows(),mHSV.cols(), CvType.CV_8UC1);
+        hsv_planes.set(2,channel);
+        Core.merge(hsv_planes,mHSV);
+
+        mHSV.convertTo(mHSV, CvType.CV_8UC1);
+        mHSV = Histogram(mHSV);
+        return mHSV;
     }
 
     /**

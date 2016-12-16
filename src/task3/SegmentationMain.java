@@ -5,6 +5,8 @@ import org.opencv.core.*;
 import org.opencv.highgui.Highgui;
 import org.opencv.objdetect.CascadeClassifier;
 import task3.interfaces.Segmentation;
+import tools.ImageSettings;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +20,21 @@ public class SegmentationMain {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         //вхідне зображення
-        String imagePath = "C:\\Projects\\CVforStudents\\img\\1.jpg";
+        String imagePath = "C:\\bioimg\\testsegmentation\\watershed\\1\\1.jpg";
+        String expertImagePath = "C:\\bioimg\\testsegmentation\\thresholding\\TS_06_19_13_17_42\\expert\\expert.png";
 
-        Img.setImg(Highgui.imread(imagePath, Highgui.CV_LOAD_IMAGE_COLOR));
+
+
+        Mat originalMat = Highgui.imread(imagePath);
+        Mat expertMat = Highgui.imread(expertImagePath);
+
+
+        ImageSettings imageSettings = new ImageSettings(originalMat, expertMat);
+
+        Highgui.imwrite("C:\\bioimg\\testsegmentation\\watershed\\1\\newImg.bmp",
+                imageSettings.getResizedImageMat());
+
+        Img.setImg(imageSettings.getResizedImageMat());
 
         //preProcItems - список методів сегментації
         List<String>segmentationItems = new ArrayList<>();
@@ -28,7 +42,7 @@ public class SegmentationMain {
         //segmentationItems.add("laplacian");
         //segmentationItems.add("kmeans");
         //segmentationItems.add("threshold");
-        //segmentationItems.add("watershed");
+        segmentationItems.add("watershed");
         //segmentationItems.add("grabcut");
 
         SegmentationFactory segmentationFactory = new SegmentationFactory();
@@ -37,7 +51,7 @@ public class SegmentationMain {
             segmentation.getSegmentationMethod();
         }
 
-
+/*
         try {
             CascadeClassifier faceDetector = new CascadeClassifier(SegmentationMain.class.getResource("C:\\Projects\\CVforStudents\\haarcascade_frontalface_alt.xml").getPath());
 
@@ -58,7 +72,7 @@ public class SegmentationMain {
             Highgui.imwrite(filename, image);
         }catch (Exception e){
             System.out.println(e);
-        }
+        }*/
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

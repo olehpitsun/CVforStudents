@@ -1,0 +1,9 @@
+
+I = imread('C:\bioimg\testsegmentation\watershed\TS_06_19_13_17_42\TS_06_19_13_17_42_grey.png');
+I_cropped = I(400:900, 465:965);
+I_eq = adapthisteq(I_cropped);
+I_eq_c = imcomplement(I_eq);
+I_mod = imimposemin(I_eq_c, ~bw4 | mask_em);
+L = watershed(I_mod);
+imshow(label2rgb(L))
+imcredit('Image courtesy of Dr. Ramiro Massol')
