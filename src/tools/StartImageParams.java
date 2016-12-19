@@ -1,8 +1,6 @@
 package tools;
 
-import objects.Estimate.Estimate;
 import org.opencv.core.Mat;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -11,11 +9,12 @@ import java.awt.image.BufferedImage;
  */
 public class StartImageParams {
 
-    /**
-     *
-     * @param Mat inputImg - вхідне зображення
-     */
-    public static void getStartValues(Mat inputImg){
+    private double redValue, greenVlue, blueValue;
+    private float histogramAverage;
+
+    public StartImageParams(){}
+
+    public void getStartValues(Mat inputImg){
         String timeStamp = "temp.png";
         matToBufImg matToBufImg = new matToBufImg(inputImg,timeStamp);
         BufferedImage bi = matToBufImg.getImage();
@@ -39,19 +38,29 @@ public class StartImageParams {
             }
         }
         int num = w * h;
-        Estimate.setRedAverage(sumr/num);
-        Estimate.setGreenAverage(sumg/num);
-        Estimate.setBlueAverage(sumb/num);
-
-        System.out.println(Estimate.getRedAverage());
-        System.out.println(Estimate.getGreenAverage());
-        System.out.println(Estimate.getBlueAverage());
+        this.redValue = sumr/num;
+        this.greenVlue = sumg/num;
+        this.blueValue = sumb/num;
 
         float bright = (299 * sumr + 587 * sumg + 114 * sumb) / 10000;
         bright = bright/100000;
-        Estimate.setBrightVal(bright);
+        this.histogramAverage = bright;
+    }
 
-        System.out.println("Bright = " + Estimate.getBrightVal());
+    public double getRedValue(){
+        return this.redValue;
+    }
+
+    public double getGreenVlue(){
+        return this.greenVlue;
+    }
+
+    public double getBlueValue(){
+        return this.blueValue;
+    }
+
+    public float getHistogramAverage(){
+        return histogramAverage;
     }
 }
 

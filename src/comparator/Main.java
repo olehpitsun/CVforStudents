@@ -26,6 +26,8 @@ public class Main {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
+    public static double distanceResult;
+
 
     public static void main(Mat image, Mat expert) {
         //System.out.println("Open CV version - " + Core.VERSION);
@@ -68,8 +70,12 @@ public class Main {
 
         //System.out.println("\n====================\n" + "image" + " => " + "expert");
         mainComparator.compare(contoursExpert, contoursWatershed);
+        distanceResult = mainComparator.getResultDistance();
     }
 
+    public static Double getDistance(){
+        return distanceResult;
+    }
     /*
     public static void skeletonEstimator(){
 

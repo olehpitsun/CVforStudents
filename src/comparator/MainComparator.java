@@ -18,6 +18,7 @@ public class MainComparator {
     Double Gr_HausdorffDistance;
     Double GR_FrechetDistance;
     Double FrechetDistance;
+    public double resultDistance;
 
     public MainComparator(){
         this.comparators = new ArrayList<>();
@@ -59,8 +60,12 @@ public class MainComparator {
     private void Result(){
         Double result = 0.5 * this.FrechetDistance + 0.5 * this.Gr_HausdorffDistance;
         System.out.print( "\u001B[34m" +"Result:  " + result + "\u001B[0m");
+        resultDistance = result;
     }
 
+    public double getResultDistance(){
+        return resultDistance;
+    }
     /* Алгоритм порівняння двох зображень (може бути змінений на будь-який інший)
     * Кожен контур першого зображення порівнюється з кожним контуром другого зображення
     * 1. Шукаємо найменшу відстань для від контура зображення 1 до контурів зображення 2. Збергіаємо це значення
