@@ -11,7 +11,7 @@ public class Watershed implements Segmentation {
     @Override
     public void getSegmentationMethod() {
 
-        Highgui.imwrite("C:\\bioimg\\testsegmentation\\watershed\\1\\" + 123 + ".jpg",
-                tools.Segmentation.watershed(Img.getImg()));
+        //Highgui.imwrite("C:\\bioimg\\testsegmentation\\watershed\\1\\" + 123 + ".jpg",
+         //       tools.Segmentation.watershed(Img.getImg()));
     }
 }

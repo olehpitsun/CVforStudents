@@ -16,7 +16,7 @@ public class PreProcImgOperations {
         image.copyTo(dst);
 
         Scalar modifier;
-        modifier = new Scalar(a,a,a,1);
+        modifier = new Scalar(1,1,1.2,1);
         Core.multiply(dst, modifier, dst);
         return dst;
     }

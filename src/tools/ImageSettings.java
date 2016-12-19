@@ -4,7 +4,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 
 /**
- * Created by oleh_pi on 15.12.2016.
+ * Created by oleh on 15.12.2016.
  */
 public class ImageSettings {
 

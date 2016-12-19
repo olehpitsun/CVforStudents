@@ -48,7 +48,7 @@ public class StartImageParams {
         System.out.println(Estimate.getBlueAverage());
 
         float bright = (299 * sumr + 587 * sumg + 114 * sumb) / 10000;
-        bright = bright/100000000;
+        bright = bright/100000;
         Estimate.setBrightVal(bright);
 
         System.out.println("Bright = " + Estimate.getBrightVal());

@@ -84,14 +84,14 @@ public class Segmentation {
      * @param img - Вхідне зображення
      * @return Mat - результат
      */
-    public static Mat watershed(Mat img)
+    public static Mat watershed(Mat img, int lowLevel)
     {
         Mat threeChannel = new Mat();
 
         Imgproc.cvtColor(img, threeChannel, Imgproc.COLOR_BGR2GRAY);
 
 
-        Imgproc.threshold(threeChannel, threeChannel, 85, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C);
+        Imgproc.threshold(threeChannel, threeChannel, lowLevel, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C);
 
 
         Mat fg = new Mat(img.size(),CvType.CV_8U);

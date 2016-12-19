@@ -19,15 +19,18 @@ import static tools.HistogramEq.HE.Histogram;
  */
 public class ImageManagerModule {
 
-    public Mat autoImageCorrection(Mat src){
+    public Mat autoImageCorrection(Mat src, int lowLevel){
 
         FiltersOperations filtroperation = new FiltersOperations(src, "4", "5", "", "", ""); // медіанний фільтр
 
         Mat brightMat = PreProcImgOperations.bright(filtroperation.getOutputImage(), 10); // яскравість
+        filtroperation.getOutputImage().release();
+        Mat contrastMat = PreProcImgOperations.contrast(brightMat, 1.0);
+        brightMat.release();
 
         //Mat histogramMat = histogrmEqualization(brightMat);
 
-        Mat result = Segmentation.watershed(brightMat);
+        Mat result = Segmentation.watershed(contrastMat, lowLevel);
 
         return result;
     }
