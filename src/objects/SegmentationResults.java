@@ -14,14 +14,15 @@ public class SegmentationResults {
     public  Double blueAverage;
     public  Double distance;
     public  Double FRAG;
+    public  Integer human_evaluate;
 
-
-    public SegmentationResults(Integer lastID, String imgName, Integer lowThresh, Double distance, Double FRAG) {
+    public SegmentationResults(Integer lastID, String imgName, Integer lowThresh, Double distance, Double FRAG, Integer human_evaluate) {
         this.lastID = lastID;
         this.imgName = imgName;
         this.lowThresh = lowThresh;
         this.distance = distance;
         this.FRAG = FRAG;
+        this.human_evaluate = human_evaluate;
     }
 
     public Integer getLastID() {
@@ -96,6 +97,14 @@ public class SegmentationResults {
         this.FRAG = FRAG;
     }
 
+    public Integer getHuman_evaluate() {
+        return human_evaluate;
+    }
+
+    public void setHuman_evaluate(Integer human_evaluate) {
+        this.human_evaluate = human_evaluate;
+    }
+
     @Override
     public String toString() {
         return "SegmentationResults{" +
@@ -104,6 +113,7 @@ public class SegmentationResults {
                 ", lastID=" + lastID +
                 ", distance=" + distance +
                 ", FRAG=" + FRAG +
+                ", human_evaluate=" + human_evaluate +
                 '}';
     }
 }

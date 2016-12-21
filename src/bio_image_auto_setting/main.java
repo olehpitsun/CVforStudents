@@ -17,6 +17,7 @@ import tools.StartImageParams;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by oleh on 16.12.2016.
@@ -88,13 +89,11 @@ public class main {
             FRAG frag = new FRAG(newImageMat, expertImgMat);
             System.out.println("\nFRAG = " + frag.getResult());
 
-            segmentationResults.add(new SegmentationResults(lastID, imgName, lowTreshValue.get(i), Main.getDistance(),frag.getResult()));
+            segmentationResults.add(new SegmentationResults(lastID, imgName, lowTreshValue.get(i), Main.getDistance(),frag.getResult(),0));
         }
 
         setOutputValues(); // додати в базу результати дослідів
     }
-
-
 
     /**
      * Додати дані в БД
@@ -105,10 +104,46 @@ public class main {
     }
 
     private static void setOutputValues() {
-        for(int i = 0; i < segmentationResults.size(); i++ ){
-            storeData.insertOutputValues(segmentationResults.get(i).lastID, segmentationResults.get(i).imgName,
-                    segmentationResults.get(i).lowThresh, segmentationResults.get(i).distance, (double)segmentationResults.get(i).FRAG );
+
+        int index = 0; // індекс елемента в колекції
+        double minDistance = segmentationResults.get(0).distance;
+
+        for(int i = 1; i < segmentationResults.size(); i++ ){
+                if(segmentationResults.get(i).distance < minDistance){
+                    minDistance = segmentationResults.get(i).distance;
+                    index = i;
+                }
         }
+        storeResultDataToDB (index);// зберігання запису в БД
+        setHumanValue();
+    }
+
+    /**
+     * анесення результатів до БД
+     * @param index - індекс запису в колекції
+     */
+    private static void storeResultDataToDB(int index){
+        storeData.insertOutputValues(segmentationResults.get(index).lastID, segmentationResults.get(index).imgName,
+                segmentationResults.get(index).lowThresh, segmentationResults.get(index).distance, (double)segmentationResults.get(index).FRAG,0 );
+    }
+
+    /**
+     * @param index - індекс запису в колекції
+     * @param humanV - оцінка зображення людиною
+     */
+    private static void storeResultDataToDB(int index, int humanV){
+        storeData.insertOutputValues(segmentationResults.get(index).lastID, segmentationResults.get(index).imgName,
+                segmentationResults.get(index).lowThresh, segmentationResults.get(index).distance, (double)segmentationResults.get(index).FRAG,humanV );
+    }
+
+    /**
+     * Вивід повідомлення для вводу номеру кращого зображення
+     */
+    private static void setHumanValue(){
+        System.out.println("Введіть номер найкращого зображення ");
+        Scanner sc = new Scanner(System.in);
+        int num = sc.nextInt();
+        storeResultDataToDB(num, num);
     }
 
     /**

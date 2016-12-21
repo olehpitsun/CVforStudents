@@ -27,10 +27,10 @@ public class storeData extends SQLDatabase{
         return id;
     }
 
-    public void insertOutputValues(int lastID, String img_name, double lowThresh, double distance, double frag){
+    public void insertOutputValues(int lastID, String img_name, double lowThresh, double distance, double frag, double human_evaluate){
         try {
-            sqlInsertExecute("INSERT INTO processingoutputvalues (input_id, img_name, distance, frag, lowthreshlevel)" +
-                    "VALUES ("+"'"+lastID+"'," +"'"+img_name+"'," + "'"+distance+"',"+"'"+frag+"',"+"'"+lowThresh+"' )");
+            sqlInsertExecute("INSERT INTO processingoutputvalues (input_id, img_name, distance, frag, lowthreshlevel, human_evaluate)" +
+                    "VALUES ("+"'"+lastID+"'," +"'"+img_name+"'," + "'"+distance+"',"+"'"+frag+"',"+"'"+lowThresh+"',"+human_evaluate+"' )");
         }catch (Exception ex){
             System.err.println(ex);
         }
